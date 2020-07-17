@@ -20,7 +20,10 @@ def ra_scraper(url,club):
             article_number = len(articles) - articles.index(article)
             print(f'Event {article_number} of {len(articles)}')
             event_dict = {}
-            event_dict['date'] = article.find('p',class_='date').get_text()
+            try:
+                event_dict['date'] = article.find('p',class_='date').get_text()
+            except:
+                event_dict['date'] = article.find('p',class_='flag').get_text()
             event_dict['link'] = article.find('a').get('href')
             event_dict['name'] = article.find('h1').get_text()
             event_dict['lineup'] = get_lineup(event_dict['link'],club)
