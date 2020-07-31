@@ -4,28 +4,46 @@ import time
 import re
 from tqdm import tqdm
 
+
 def _clubs(url,city):
     clubs = get_clubs(url)
+    # num_of_clubs = len(list(clubs))
+
     club_list = []
     for club in tqdm(clubs):
-        print(club)
-        time.sleep(2)
+        print('\n')
+        # set default capacity to -1
         club_dict = {'capacity': -1}
         url = club[0]
         r = requests.get(f'https://www.residentadvisor.net{url}')
         soup = BeautifulSoup(r.text,'html.parser')
         section = soup.find('ul',class_='clearfix')
+        # club_dict = {'club_name': club[1],
+        #              'club_id': url.replace("/club.aspx?id=",'').strip(''),
+        #              'address': club[2],
+        #              'city': city}
         club_dict['club_name'] = club[1]
         club_dict['club_id'] = url.replace("/club.aspx?id=",'').strip('')
         club_dict['address'] = club[2]
-        club_dict['country'] = section.find('div',class_='fl').get_text()
         club_dict['city'] = city
+
+        # not all pages have country, can be filled in when cleaning
+        try:
+            club_dict['country'] = section.find('div',class_='fl').get_text()
+        except:
+            club_dict['country'] = ''
+
+        # looking for Capacity
         li_list = section.find_all('li')
         for li in li_list:
             if 'Capacity' in li.get_text():
                 club_dict['capacity'] = li.get_text().split('/')[1]
+
         print(club_dict)
+        print('\n')
+
         club_list.append(club_dict)
+        time.sleep(2)
     return club_list
 
 def _events(url,club,years):
@@ -46,7 +64,7 @@ def _events(url,club,years):
                 event_dict['date'] = article.find('p',class_='flag').get_text()
             event_dict['link'] = article.find('a').get('href')
             event_dict['name'] = article.find('h1').get_text()
-            event_dict['lineup'] = f.get_lineup(event_dict['link'],club)
+            event_dict['lineup'] = get_lineup(event_dict['link'],club)
             print('Added:'+'\n'+event_dict['date']+'\n'+event_dict['name']+'\n'+str(event_dict['lineup'])+'\n')
             events.append(event_dict)
         time.sleep(2)
@@ -61,17 +79,11 @@ def get_clubs(url):
     hrefs = []
     for i in range(1,len(club_items),2):
         if club_items[i].find('a') != None:
-            print(club_items[i].find('a').get('href'))
-            print(club_items[i].get_text())
-            print(club_items[i+1].get_text() + '\n')
             names.append(club_items[i].get_text())
             addresses.append(club_items[i+1].get_text())
             hrefs.append(club_items[i].find('a').get('href'))
         elif club_items[i].find('a') == None:
             break
-    # links = link_section.find_all('a')
-    # names = [x.get_text() for x in links]
-    # hrefs = [x.get('href') for x in links]
     return zip(hrefs,names,addresses)
 
 def get_lineup(link, club):

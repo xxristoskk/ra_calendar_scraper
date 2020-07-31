@@ -5,15 +5,27 @@ import pandas as pd
 
 # messages
 def message():
-    print("Welcome to RA Scraper (beta)")
-    print("Scrape data on events, clubs, or artists and save the data as a CSV, JSON, or Excel file \n")
-    print("Keywords are 'events', 'clubs', and 'artists'")
+    print("Scrape data on events or clubs, and save the data as a CSV, JSON, or Excel file \n")
+    print("Keywords are 'events' and 'clubs'")
     print("For more information on these keywords, type 'help' \n")
 
 def help_message():
     print("'events' will save data from the event pages of a given club/promoter")
     print("'clubs' will save data from the club pages of a given city")
-    print("'artists' will save data from an artist page of a given artist name \n")
+    # print("'artists' will save data from an artist page of a given artist name \n")
+
+def prompt():
+    return input("Searching for events or clubs?: ").lower()
+
+def process(keyword,format):
+    if keyword == 'events':
+        events(format,keyword)
+    elif keyword == 'clubs':
+        clubs(format,keyword)
+    else:
+        print('Error: keyword not recognized \n')
+        keyword = prompt()
+        process(keyword,format)
 
 # keyword functions
 def events(format,keyword):
@@ -33,10 +45,6 @@ def clubs(format,keyword):
     results = scrape._clubs(city_url,city)
     save_results(results,city,format,keyword)
 
-# def artists(format):
-#     artist_name = input("Name of artist: ").lower()
-#     artist_url = search_artist(artist_name)
-
 # search functions
 def search_city(city):
     search_url = f'https://www.residentadvisor.net/search.aspx?searchstr={city}'
@@ -54,26 +62,32 @@ def search_club(club):
     search_url = f'https://www.residentadvisor.net/search.aspx?searchstr={club}'
     r = requests.get(search_url)
     soup = BeautifulSoup(r.text, 'html.parser')
-    club_link = soup.find('a',class_='f24').get('href')
+    try:
+        club_link = soup.find('a',class_='f24').get('href')
+    except:
+        club_link = soup.find('ul',class_='list').find('a').get('href')
     return club_link
 
 # save function
 def save_results(results,search_term,format,keyword):
     df = pd.DataFrame(results)
 
+    # if clubs were scraped it gets sent to this folder
     if keyword == 'clubs':
-        path = '/club_data/'
+        path = 'club_data/'
+    # if events were scraped it gets sent to this folder
     elif keyword == 'events':
-        path = '/data/'
+        path = 'data/'
+
     if format == 'excel':
-        df.to_excel(f'{path}{search_term}.xlsx',header=df.columns,index=False)
+        df.to_excel(f'~/projects/ra_calendar_scraper/{path}{search_term}.xlsx',header=df.columns,index=False)
         return print("Results saved")
     elif format == 'csv':
-        df.to_csv(f'{path}{search_term}.csv',header=df.columns,index=False)
+        df.to_csv(f'~/projects/ra_calendar_scraper/{path}{search_term}.csv',header=df.columns,index=False)
         return print("Results saved")
     elif format == 'json':
-        df.to_json(f'{path}{search_term}.json',header=df.columns,index=False)
+        df.to_json(f'~/projects/ra_calendar_scraper/{path}{search_term}.json',header=df.columns,index=False)
         return print("Results saved")
     else:
         print(f"Error format: '{format}' not valid \n Saving as CSV")
-        df.to_csv(f'{search_term}.csv',header=df.columns,index=False)
+        df.to_csv(f'~/projects/ra_calendar_scraper/{path}{search_term}.csv',header=df.columns,index=False)

@@ -8,34 +8,28 @@ import re
 from tqdm import tqdm
 import util_functions as f
 
-def process(keyword,format):
-    if keyword == 'events':
-        return f.events(format,keyword)
-    elif keyword == 'clubs':
-        return f.clubs(format,keyword)
-    elif keyword == 'artist':
-        print("This function is not available yet.")
-        return False
-    elif keyword == 'help':
-        f.help_message()
-        return False
-
 def main():
 
+    # boolean that keeps the scraper running
     running = True
+    # welcome message
     f.message()
 
     while running:
+        # prompt for the keyword
+        keyword = f.prompt()
 
+        if keyword == 'help':
+            f.help_message()
+            keyword = f.prompt()
+
+        # choosing the format of save data
         save_format = input("Save data in which format?: ").lower()
-        keyword = input("Searching for events, clubs, or artist?: ").lower()
+        # processing the keyword
+        f.process(keyword,save_format)
 
-        if not process(keyword,save_format):
-            keyword = input("Searching for events, club, or artist?: ").lower()
-            process(keyword,save_format)
-
+        # prompt for continuing or breaking the while loop
         exit_prompt = input("Scrape again?(y/n): ")
-
         if exit_prompt == 'n':
             running = False
         else:
