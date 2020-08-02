@@ -1,11 +1,3 @@
-from bs4 import BeautifulSoup
-import pandas as pd
-import numpy as np
-import requests
-from datetime import timedelta,date
-import time
-import re
-from tqdm import tqdm
 import util_functions as f
 
 def main():
@@ -22,6 +14,8 @@ def main():
         if keyword == 'help':
             f.help_message()
             keyword = f.prompt()
+        elif keyword == '':
+            f.check_qri()
 
         # choosing the format of save data
         save_format = input("Save data in which format?: ").lower()
