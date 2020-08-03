@@ -18,14 +18,14 @@ def _clubs(url,city):
         r = requests.get(f'https://www.residentadvisor.net{url}')
         soup = BeautifulSoup(r.text,'html.parser')
         section = soup.find('ul',class_='clearfix')
-        # club_dict = {'club_name': club[1],
-        #              'club_id': url.replace("/club.aspx?id=",'').strip(''),
-        #              'address': club[2],
-        #              'city': city}
-        club_dict['club_name'] = club[1]
-        club_dict['club_id'] = url.replace("/club.aspx?id=",'').strip('')
-        club_dict['address'] = club[2]
-        club_dict['city'] = city
+        club_dict = {'club_name': club[1],
+                     'club_id': url.replace("/club.aspx?id=",'').strip(''),
+                     'address': club[2],
+                     'city': city}
+        # club_dict['club_name'] = club[1]
+        # club_dict['club_id'] = url.replace("/club.aspx?id=",'').strip('')
+        # club_dict['address'] = club[2]
+        # club_dict['city'] = city
 
         # not all pages have country, can be filled in when cleaning
         try:

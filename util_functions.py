@@ -92,9 +92,9 @@ def save_results(results,search_term,format,keyword):
     if keyword == 'clubs':
         path = 'club_data/'
     # if events were scraped it gets sent to this folder
-    elif keyword == 'events':
+    elif keyword == 'events' or path == 'pipeline':
         path = 'data/'
-
+        
     if format == 'excel':
         df.to_excel(f'~/projects/ra_calendar_scraper/{path}{search_term}.xlsx',header=df.columns,index=False)
         return print("Results saved")
