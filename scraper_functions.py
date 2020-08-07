@@ -4,7 +4,6 @@ import time
 import re
 from tqdm import tqdm
 
-
 def _clubs(url,city):
     clubs = get_clubs(url)
     # num_of_clubs = len(list(clubs))
@@ -22,10 +21,6 @@ def _clubs(url,city):
                      'club_id': url.replace("/club.aspx?id=",'').strip(''),
                      'address': club[2],
                      'city': city}
-        # club_dict['club_name'] = club[1]
-        # club_dict['club_id'] = url.replace("/club.aspx?id=",'').strip('')
-        # club_dict['address'] = club[2]
-        # club_dict['city'] = city
 
         # not all pages have country, can be filled in when cleaning
         try:
@@ -97,9 +92,12 @@ def get_lineup(link, club):
             box_lineup = soup.find('p',class_='lineup small')
             lineup = re.sub(f"{club.capitalize()}:",'',box_lineup.get_text()).split("\n")
     else:
-        box_lineup = soup.find('p',class_='lineup medium')
-        lineup = re.sub(f"{club.capitalize()}:",'',box_lineup.get_text()).split("\n")
-    if club.capitalize() in lineup:
-        lineup = [x for x in lineup if x != club.capitalize()]
+        try:
+            box_lineup = soup.find('p',class_='lineup medium')
+            lineup = re.sub(f"{club.capitalize()}:",'',box_lineup.get_text()).split("\n")
+            if club.capitalize() in lineup:
+                lineup = [x for x in lineup if x != club.capitalize()]
+        except:
+            print('No lineup found')
     time.sleep(1)
     return [x for x in lineup if x != '']

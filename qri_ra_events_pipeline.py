@@ -18,7 +18,8 @@ for name in os.listdir(folder):
         already_scraped.append(name.split('.csv')[0].strip())
 
 def run_pipeline():
-    for i,row in tqdm(club_df.iterrows()):
+    key = input("Scrape events in which city?: ").lower()
+    for i,row in tqdm(club_df[club_df['city']==key].iterrows()):
         club_name = row['club_name'].split('/')[0].strip() # any venue that is split into parts is named by the first part
         if club_name in already_scraped:
             continue

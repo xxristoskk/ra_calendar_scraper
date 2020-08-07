@@ -33,8 +33,8 @@ def process(keyword,format):
         process(keyword,format)
 
 # creating functions to search through the qri pipeline as opposed to making requests to RA
-def check_pipeline(club):
-    if club in list(pipeline.club_df['club_names']):
+def check_pipeline(key):
+    if key in list(pipeline.club_df['club_names']):
         return True
     else:
         return False
@@ -63,7 +63,7 @@ def clubs(format,keyword):
 # search functions
 def search_city(city):
     search_url = f'https://www.residentadvisor.net/search.aspx?searchstr={city}'
-    r = requests.get(search_url)
+    r = requests.get(search_url,proxies=proxies)
     soup = BeautifulSoup(r.text,'html.parser')
     try:
         link_holder = soup.find('li',class_='clearfix')
@@ -75,7 +75,7 @@ def search_city(city):
 
 def search_club(club):
     search_url = f'https://www.residentadvisor.net/search.aspx?searchstr={club}'
-    r = requests.get(search_url)
+    r = requests.get(search_url,proxies=proxies)
     soup = BeautifulSoup(r.text, 'html.parser')
     try:
         club_link = soup.find('a',class_='f24').get('href')
@@ -94,7 +94,7 @@ def save_results(results,search_term,format,keyword):
     # if events were scraped it gets sent to this folder
     elif keyword == 'events' or path == 'pipeline':
         path = 'data/'
-        
+
     if format == 'excel':
         df.to_excel(f'~/projects/ra_calendar_scraper/{path}{search_term}.xlsx',header=df.columns,index=False)
         return print("Results saved")
