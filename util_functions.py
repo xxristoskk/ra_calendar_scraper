@@ -1,9 +1,8 @@
 from bs4 import BeautifulSoup
 import requests
-import scraper_functions as scrape
 import pandas as pd
-import qri
 import qri_ra_events_pipeline as pipeline
+from search import Search
 
 # messages
 def message():
@@ -22,9 +21,9 @@ def prompt():
 
 def process(keyword,format):
     if keyword == 'events':
-        events(format,keyword)
+        Search(keyword,format).events()
     elif keyword == 'clubs':
-        clubs(format,keyword)
+        Search(keyword,format).clubs()
     elif keyword == 'pipeline':
         pipeline.run_pipeline()
     else:
@@ -38,51 +37,6 @@ def check_pipeline(key):
         return True
     else:
         return False
-
-# keyword functions
-def events(format,keyword):
-    club = input("Name of club/promoter: ").lower()
-    min_year = input("From what year?: ")
-    max_year = input("Until what year?: ")
-    years = [str(x) for x in range(int(min_year),int(max_year)+1)]
-    if check_pipeline():
-        club_url = pipeline.find_url(club)
-    else:
-        club_url = search_club(club)
-    print(f'Found club url {club_url}')
-    results = scrape._events(club_url,club,years)
-    save_results(results,club,format,keyword)
-
-def clubs(format,keyword):
-    city = input("Name of city: ").lower()
-    city_url = search_city(city).replace('local','clubs')
-    print(f'Found city url {city_url} \n')
-    results = scrape._clubs(city_url,city)
-    save_results(results,city,format,keyword)
-
-# search functions
-def search_city(city):
-    search_url = f'https://www.residentadvisor.net/search.aspx?searchstr={city}'
-    r = requests.get(search_url,proxies=proxies)
-    soup = BeautifulSoup(r.text,'html.parser')
-    try:
-        link_holder = soup.find('li',class_='clearfix')
-        city_link = link_holder.find('a').get('href')
-    except:
-        link_holder = soup.find('div',class_='but heading-more mobile-off')
-        city_link = link_holder.find('a').get('href')
-    return city_link.replace('events','clubs')
-
-def search_club(club):
-    search_url = f'https://www.residentadvisor.net/search.aspx?searchstr={club}'
-    r = requests.get(search_url,proxies=proxies)
-    soup = BeautifulSoup(r.text, 'html.parser')
-    try:
-        club_link = soup.find('a',class_='f24').get('href')
-    except:
-        club_link = soup.find('ul',class_='list').find('a').get('href')
-    return club_link
-
 
 # save function
 def save_results(results,search_term,format,keyword):

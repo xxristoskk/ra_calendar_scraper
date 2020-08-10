@@ -14,8 +14,6 @@ def main():
         if keyword == 'help':
             f.help_message()
             keyword = f.prompt()
-        elif keyword == '':
-            f.check_qri()
 
         # choosing the format of save data
         save_format = input("Save data in which format?: ").lower()
