@@ -2,7 +2,7 @@ import qri_ra_events_pipeline as pipeline
 import requests
 from bs4 import BeautifulSoup
 import util_functions as f
-import scraper_functions as scrape
+from scraper_functions import Scrape
 
 class Search():
     def __init__(self,key,format):
@@ -20,14 +20,14 @@ class Search():
         else:
             club_url = search_club(self.key)
         print(f'Found club url {club_url}')
-        results = scrape._events(club_url,club,years)
+        results = Scrape(club_url).events(club,years)
         f.save_results(results,club,self.format,self.key)
 
     def clubs(self):
         city = input("Name of city: ").lower()
         city_url = search_city(city).replace('local','clubs')
         print(f'Found city url {city_url} \n')
-        results = scrape._clubs(city_url,city)
+        results = Scrape(city_url).clubs(city)
         f.save_results(results,city,self.format,self.key)
 
 # search functions

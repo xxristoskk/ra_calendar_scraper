@@ -4,66 +4,65 @@ import time
 import re
 from tqdm import tqdm
 
-def _clubs(url,city):
-    clubs = get_clubs(url)
-    # num_of_clubs = len(list(clubs))
+class Scrape():
+    def __init__(self,url):
+        self.url = url
 
-    club_list = []
-    for club in tqdm(clubs):
-        print('\n')
-        # set default capacity to -1
-        club_dict = {'capacity': -1}
-        url = club[0]
-        r = requests.get(f'https://www.residentadvisor.net{url}')
-        soup = BeautifulSoup(r.text,'html.parser')
-        section = soup.find('ul',class_='clearfix')
-        club_dict = {'club_name': club[1],
-                     'club_id': url.replace("/club.aspx?id=",'').strip(''),
-                     'address': club[2],
-                     'city': city}
+    def clubs(self,city):
+        clubs = get_clubs(self.url)
+        club_list = []
+        for club in tqdm(clubs):
+            print('\n')
+            # set default capacity to -1
+            club_dict = {'capacity': -1}
+            club_url = club[0]
+            r = requests.get(f'https://www.residentadvisor.net{club_url}')
+            soup = BeautifulSoup(r.text,'html.parser')
+            section = soup.find('ul',class_='clearfix')
+            club_dict = {'club_name': club[1],
+                         'club_id': url.replace("/club.aspx?id=",'').strip(''),
+                         'address': club[2],
+                         'city': city}
 
-        # not all pages have country, can be filled in when cleaning
-        try:
-            club_dict['country'] = section.find('div',class_='fl').get_text()
-        except:
-            club_dict['country'] = ''
-
-        # looking for Capacity
-        li_list = section.find_all('li')
-        for li in li_list:
-            if 'Capacity' in li.get_text():
-                club_dict['capacity'] = li.get_text().split('/')[1]
-
-        print(club_dict)
-        print('\n')
-
-        club_list.append(club_dict)
-        time.sleep(2)
-    return club_list
-
-def _events(url,club,years):
-    events = []
-    for year in tqdm(years):
-        print(f'Scraping year {year}')
-        r = requests.get(f"https://www.residentadvisor.net{url}&show=events&yr={year}")
-        soup = BeautifulSoup(r.text, 'html.parser')
-        articles = soup.find_all('article')
-        print(f'Found {len(articles)} events')
-        for article in articles:
-            article_number = len(articles) - articles.index(article)
-            print(f'Event {article_number} of {len(articles)}')
-            event_dict = {}
+            # not all pages have country
             try:
-                event_dict['date'] = article.find('p',class_='date').get_text()
+                club_dict['country'] = section.find('div',class_='fl').get_text()
             except:
-                event_dict['date'] = article.find('p',class_='flag').get_text()
-            event_dict['link'] = article.find('a').get('href')
-            event_dict['name'] = article.find('h1').get_text()
-            event_dict['lineup'] = get_lineup(event_dict['link'],club)
-            print('Added:'+'\n'+event_dict['date']+'\n'+event_dict['name']+'\n'+str(event_dict['lineup'])+'\n')
-            events.append(event_dict)
-        time.sleep(2)
-    return events
+                club_dict['country'] = ''
+
+            # looking for Capacity
+            li_list = section.find_all('li')
+            for li in li_list:
+                if 'Capacity' in li.get_text():
+                    club_dict['capacity'] = li.get_text().split('/')[1]
+            print(f'{club_dict} \n')
+            club_list.append(club_dict)
+            time.sleep(2)
+        return club_list
+
+    def events(self,club,years):
+        events = []
+        for year in tqdm(years):
+            print(f'Scraping year {year}')
+            r = requests.get(f"https://www.residentadvisor.net{self.url}&show=events&yr={year}")
+            soup = BeautifulSoup(r.text, 'html.parser')
+            articles = soup.find_all('article')
+            print(f'Found {len(articles)} events')
+            for article in articles:
+                article_number = len(articles) - articles.index(article)
+                print(f'Event {article_number} of {len(articles)}')
+                event_dict = {}
+                try:
+                    event_dict['date'] = article.find('p',class_='date').get_text()
+                except:
+                    event_dict['date'] = article.find('p',class_='flag').get_text()
+                event_dict['link'] = article.find('a').get('href')
+                event_dict['name'] = article.find('h1').get_text()
+                event_dict['lineup'] = get_lineup(event_dict['link'],club)
+                print('Added:'+'\n'+event_dict['date']+'\n'+event_dict['name']+'\n'+str(event_dict['lineup'])+'\n')
+                events.append(event_dict)
+            time.sleep(2)
+        return events
 
 def get_clubs(url):
     r = requests.get(f'https://www.residentadvisor.net{url}')
@@ -81,8 +80,8 @@ def get_clubs(url):
             break
     return zip(hrefs,names,addresses)
 
-def get_lineup(link, club):
-    r = requests.get(f"https://www.residentadvisor.net{link}")
+def get_lineup(url, club):
+    r = requests.get(f"https://www.residentadvisor.net{url}")
     soup = BeautifulSoup(r.text, 'html.parser')
     if soup.find('p',class_='lineup medium') == None:
         try:

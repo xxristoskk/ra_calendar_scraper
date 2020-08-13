@@ -1,7 +1,7 @@
 import pandas as pd
 from tqdm import tqdm
 import time
-import scraper_functions as scrape
+from scraper_functions import Scrape
 import util_functions as f
 import os
 import qri
@@ -29,7 +29,7 @@ def run_pipeline():
             years = [str(x) for x in range(2015,2021)]
             print(f'Scraping {club_name} in {city} \n')
             time.sleep(2)
-            results = scrape._events(f'/club.aspx?id={club_id}',club_name,years)
+            results = Scrape(f'/club.aspx?id={club_id}').events(club_name,years)
             f.save_results(results,club_name,'csv','events')
 
 def find_url(club):

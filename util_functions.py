@@ -14,7 +14,6 @@ def help_message():
     print("'events' will save data from the event pages of a given club/promoter")
     print("'clubs' will save data from the club pages of a given city")
     print("'pipeline' starts scraping events for clubs already on Qri")
-    # print("'artists' will save data from an artist page of a given artist name \n")
 
 def prompt():
     return input("Searching for events, clubs, or pipeline?: ").lower()
@@ -39,7 +38,9 @@ def check_pipeline(key):
         return False
 
 # save function
-def save_results(results,search_term,format,keyword):
+def save_results(
+        results,search_term,format,
+        keyword):
     df = pd.DataFrame(results)
 
     # if clubs were scraped it gets sent to this folder
