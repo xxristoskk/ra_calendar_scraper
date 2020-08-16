@@ -20,7 +20,7 @@ class Scrape():
             soup = BeautifulSoup(r.text,'html.parser')
             section = soup.find('ul',class_='clearfix')
             club_dict = {'club_name': club[1],
-                         'club_id': url.replace("/club.aspx?id=",'').strip(''),
+                         'club_id': club_url.replace("/club.aspx?id=",'').strip(''),
                          'address': club[2],
                          'city': city}
 
@@ -49,7 +49,7 @@ class Scrape():
             articles = soup.find_all('article')
             print(f'Found {len(articles)} events')
             for article in articles:
-                article_number = len(articles) - articles.index(article)
+                article_number = articles.index(article) + 1
                 print(f'Event {article_number} of {len(articles)}')
                 event_dict = {}
                 try:
