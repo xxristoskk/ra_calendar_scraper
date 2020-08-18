@@ -1,22 +1,24 @@
-from bs4 import BeautifulSoup
-import requests
 import pandas as pd
-import qri_ra_events_pipeline as pipeline
+import qri_pipeline as pipeline
 from search import Search
 
 # messages
 def message():
-    print("Scrape data on events or clubs, and save the data as a CSV, JSON, or Excel file \n")
-    print("Keywords are 'events', 'clubs', and 'pipeline'")
-    print("For more information on these keywords, type 'help' \n")
+    print('''
+          Scrape data on events or clubs, and save the data as a CSV, JSON, or Excel file \n
+          Keywords are 'events', 'clubs', and 'pipeline'
+          For more information on these keywords, type 'help' \n
+          ''')
 
 def help_message():
-    print("'events' will save data from the event pages of a given club/promoter")
-    print("'clubs' will save data from the club pages of a given city")
-    print("'pipeline' starts scraping events for clubs already on Qri")
+    print('''
+          'events' will save data from the event pages of a given club/promoter \n
+          'clubs' will save data from the club pages of a given city \n
+          'pipeline' starts scraping events for clubs already in the Qri dataset
+          ''')
 
 def prompt():
-    return input("Searching for events, clubs, or pipeline?: ").lower()
+    return input("Keyword: ").lower()
 
 def process(keyword,format):
     if keyword == 'events':
@@ -29,13 +31,6 @@ def process(keyword,format):
         print('Error: keyword not recognized \n')
         keyword = prompt()
         process(keyword,format)
-
-# creating functions to search through the qri pipeline as opposed to making requests to RA
-def check_pipeline(key):
-    if key in list(pipeline.club_df['club_names']):
-        return True
-    else:
-        return False
 
 # save function
 def save_results(

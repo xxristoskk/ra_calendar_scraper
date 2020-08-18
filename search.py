@@ -1,8 +1,8 @@
-import qri_ra_events_pipeline as pipeline
 import requests
 from bs4 import BeautifulSoup
-import util_functions as f
-from scraper_functions import Scrape
+import util_functions as util
+from scraper import Scrape
+import qri_pipeline as pipeline
 
 class Search():
     def __init__(self,key,format):
@@ -15,20 +15,29 @@ class Search():
         min_year = input("From what year?: ")
         max_year = input("Until what year?: ")
         years = [str(x) for x in range(int(min_year),int(max_year)+1)]
-        if check_pipeline():
-            club_url = pipeline.find_url(self.key)
+        if pipeline.check('club', club):
+            club_url = pipeline.find_url(club)
         else:
-            club_url = search_club(self.key)
+            club_url = search_club(club)
         print(f'Found club url {club_url}')
         results = Scrape(club_url).events(club,years)
-        f.save_results(results,club,self.format,self.key)
+        util.save_results(
+            results,club,
+            self.format,self.key
+        )
 
     def clubs(self):
         city = input("Name of city: ").lower()
+        if pipeline.check('city', city):
+            print("City already scraped! Choose another.")
+            city = input("Name of city: ").lower()
         city_url = search_city(city).replace('local','clubs')
         print(f'Found city url {city_url} \n')
         results = Scrape(city_url).clubs(city)
-        f.save_results(results,city,self.format,self.key)
+        util.save_results(
+            results,city,
+            self.format,self.key
+        )
 
 # search functions
 def search_city(city):
