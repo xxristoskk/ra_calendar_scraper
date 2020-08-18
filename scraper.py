@@ -54,8 +54,8 @@ class Scrape():
                 event_dict = {
                     'link': article.find('a').get('href'),
                     'name': article.find('h1').get_text(),
-                    'lineup': get_lineup(event_dict['link'],club)
                 }
+                event_dict['lineup'] = get_lineup(event_dict['link'],club)
                 try:
                     event_dict['date'] = article.find('p',class_='date').get_text()
                 except:

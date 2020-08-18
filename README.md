@@ -5,6 +5,7 @@ Requirements:
 + Python 3.0+
 + Pandas
 + BeautifulSoup
++ Qri
 + tqdm
 
 Given a keyword that describes the intent of the scrape (clubs or events), the application takes in a city or club/promoter name, and scrapes the data, and saves it into a specified file format. The default file format is CSV, but you can specify JSON or Excel if you'd like.
