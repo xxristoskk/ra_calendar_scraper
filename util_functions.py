@@ -2,14 +2,6 @@ import pandas as pd
 import qri_pipeline as pipeline
 from search import Search
 
-# messages
-def message():
-    print('''
-          Scrape data on events or clubs, and save the data as a CSV, JSON, or Excel file \n
-          Keywords are 'events', 'clubs', and 'pipeline'
-          For more information on these keywords, type 'help' \n
-          ''')
-
 def help_message():
     print('''
           'events' will save data from the event pages of a given club/promoter \n
@@ -18,7 +10,12 @@ def help_message():
           ''')
 
 def prompt():
-    return input("Keyword: ").lower()
+    keyword = input("Keyword: ").lower()
+    if keyword == 'help':
+        help_message()
+        keyword, save_format = prompt()
+    save_format = input("Save data in which format?: ").lower()
+    return keyword, save_format
 
 def process(keyword,format):
     if keyword == 'events':
