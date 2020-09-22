@@ -6,7 +6,8 @@ def main():
     running = True
     # welcome message
     print('''
-          Scrape data on events or clubs, and save the data as a CSV, JSON, or Excel file \n
+          Scrape artists, events or clubs pages from Resident Advisor
+          and save the data as a CSV, JSON, or Excel file \n
           Keywords are 'events', 'clubs', and 'pipeline'
           For more information on these keywords, type 'help' \n
           ''')

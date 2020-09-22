@@ -10,6 +10,20 @@ class Search():
         self.format = format
 
     # keyword functions
+    def artists(self):
+        r = requests.get('https://www.residentadvisor.net/dj.aspx')
+        soup = BeautifulSoup(r.text,'html.parser')
+        sections = soup.find_all('div', class_='fl pr8')
+        soup_names = [x.find_all('a') for x in sections]
+        names = [x.get_text() for y in soup_names for x in y]
+        names = [x.lower() for x in names if x != '']
+        links = [x.get('href') for y in soup_names for x in y if x.get_text()]
+        results = Scrape('https://www.residentadvisor.net').artists(list(zip(names,links)))
+        util.save_results(
+            results,'artist_info',
+            self.format,self.key
+        )
+
     def events(self):
         club = input("Name of club/promoter: ").lower()
         min_year = input("From what year?: ")

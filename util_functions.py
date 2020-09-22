@@ -6,6 +6,7 @@ def help_message():
     print('''
           'events' will save data from the event pages of a given club/promoter \n
           'clubs' will save data from the club pages of a given city \n
+          'artists' will save data from an artist page of a given name \n
           'pipeline' starts scraping events for clubs already in the Qri dataset
           ''')
 
@@ -24,6 +25,9 @@ def process(keyword,format):
         Search(keyword,format).clubs()
     elif keyword == 'pipeline':
         pipeline.run_pipeline()
+    elif keyword == 'artists':
+        # Search(keyword,format).artists()
+        Search(keyword,format).artists()
     else:
         print('Error: keyword not recognized \n')
         keyword = prompt()
@@ -34,13 +38,15 @@ def save_results(
         results,search_term,format,
         keyword):
     df = pd.DataFrame(results)
-
+    path = ''
     # if clubs were scraped it gets sent to this folder
     if keyword == 'clubs':
         path = 'club_data/'
     # if events were scraped it gets sent to this folder
     elif keyword == 'events' or path == 'pipeline':
         path = 'data/'
+    elif keyword == 'artists':
+        path = 'artist_data/'
 
     if format == 'excel':
         df.to_excel(f'~/projects/ra_calendar_scraper/{path}{search_term}.xlsx',header=df.columns,index=False)
