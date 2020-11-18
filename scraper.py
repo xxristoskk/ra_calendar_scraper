@@ -3,6 +3,10 @@ import requests
 import time
 import re
 from tqdm import tqdm
+import qri
+
+df = qri.get("xristosk/ra_event_info").body
+event_ids = list(df['event_id'])
 
 class Scrape():
     def __init__(self,url):
@@ -93,6 +97,8 @@ class Scrape():
             print(f'Found {len(articles)} events')
             for article in articles:
                 article_number = articles.index(article) + 1
+                if article.find('a').get('href').replace('/events/','') in event_ids:
+                    continue
                 print(f'Event {article_number} of {len(articles)}')
                 event_dict = {
                     'link': article.find('a').get('href'),
